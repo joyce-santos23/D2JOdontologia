@@ -1,0 +1,30 @@
+# Diretórios temporários do Visual Studio
+.vs/
+DesignTimeBuild/
+FileContentIndex/
+v17/
+
+# Diretórios de build
+bin/
+obj/
+out/
+
+# Arquivos de configuração local
+*.user
+*.suo
+*.cache
+*.csproj.user
+*.vbproj.user
+
+# Arquivos de log
+*.log
+
+# Pacotes NuGet
+*.nupkg
+*.snupkg
+
+# Arquivos temporários e de backup
+*.tmp
+*.bak
+*.swp
+ 
