@@ -41,7 +41,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -52,26 +53,6 @@ namespace Data.Migrations
                     b.HasIndex("ScheduleId");
 
                     b.ToTable("Consultation");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Patient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("Birth")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Cpf")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Patient");
                 });
 
             modelBuilder.Entity("Domain.Entities.Procedure", b =>
@@ -121,24 +102,6 @@ namespace Data.Migrations
                     b.ToTable("Schedule");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Specialist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("SpecialtyId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SpecialtyId");
-
-                    b.ToTable("Specialist");
-                });
-
             modelBuilder.Entity("Domain.Entities.Specialty", b =>
                 {
                     b.Property<int>("Id")
@@ -172,6 +135,11 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -187,26 +155,68 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasDiscriminator().HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Patient", b =>
+                {
+                    b.HasBaseType("Domain.Entities.User");
+
+                    b.Property<DateOnly>("Birth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Cpf")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.ToTable("User", t =>
+                        {
+                            t.Property("CreatedAt")
+                                .HasColumnName("Patient_CreatedAt");
+                        });
+
+                    b.HasDiscriminator().HasValue("Patient");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Specialist", b =>
+                {
+                    b.HasBaseType("Domain.Entities.User");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SpecialtyId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("SpecialtyId");
+
+                    b.HasDiscriminator().HasValue("Specialist");
                 });
 
             modelBuilder.Entity("Domain.Entities.Consultation", b =>
                 {
                     b.HasOne("Domain.Entities.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("Consultations")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Procedure", "Procedure")
-                        .WithMany()
+                        .WithMany("Consultations")
                         .HasForeignKey("ProcedureId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Schedule", "Schedule")
-                        .WithMany()
+                        .WithMany("Consultations")
                         .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Patient");
@@ -219,9 +229,9 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.Entities.Schedule", b =>
                 {
                     b.HasOne("Domain.Entities.Specialty", "Specialty")
-                        .WithMany()
+                        .WithMany("Schedules")
                         .HasForeignKey("SpecialtyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Specialty");
@@ -230,12 +240,34 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.Entities.Specialist", b =>
                 {
                     b.HasOne("Domain.Entities.Specialty", "Specialty")
-                        .WithMany()
+                        .WithMany("Specialists")
                         .HasForeignKey("SpecialtyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Specialty");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Procedure", b =>
+                {
+                    b.Navigation("Consultations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Schedule", b =>
+                {
+                    b.Navigation("Consultations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Specialty", b =>
+                {
+                    b.Navigation("Schedules");
+
+                    b.Navigation("Specialists");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Patient", b =>
+                {
+                    b.Navigation("Consultations");
                 });
 #pragma warning restore 612, 618
         }

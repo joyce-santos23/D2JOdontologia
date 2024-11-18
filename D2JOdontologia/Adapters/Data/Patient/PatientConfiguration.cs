@@ -8,11 +8,13 @@ namespace Data.Patient
     {
         public void Configure(EntityTypeBuilder<Domain.Entities.Patient> builder)
         {
-            builder.HasKey(p => p.Id);
+            builder.HasBaseType<Domain.Entities.User>();
 
             builder.HasMany(p => p.Consultations)
                 .WithOne(c => c.Patient)
-                .HasForeignKey(c => c.PatientId);
+                .HasForeignKey(c => c.PatientId)
+                .OnDelete(DeleteBehavior.Cascade); ;
+
         }
     }
 }

@@ -16,15 +16,18 @@ namespace Data.Patient
 
             builder.HasOne(c => c.Patient)
                    .WithMany(p => p.Consultations)
-                   .HasForeignKey(c => c.PatientId);
+                   .HasForeignKey(c => c.PatientId)
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(c => c.Procedure)
                    .WithMany(p => p.Consultations)
-                   .HasForeignKey(c => c.ProcedureId);
+                   .HasForeignKey(c => c.ProcedureId)
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(c => c.Schedule)
                    .WithMany(s => s.Consultations)
-                   .HasForeignKey(c => c.ScheduleId);
+                   .HasForeignKey(c => c.ScheduleId)
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

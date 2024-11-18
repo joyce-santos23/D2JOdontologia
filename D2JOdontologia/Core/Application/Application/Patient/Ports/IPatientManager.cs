@@ -1,6 +1,12 @@
-﻿namespace Application.Ports
+﻿using Application.Patient.Requests;
+using Application.Responses;
+
+namespace Application.Ports
 {
-    internal interface IPatientManager
+    public interface IPatientManager
     {
+        Task<PatientResponse> CreatePatient(CreatePatientRequest request);
+        Task<PatientResponse> GetPatient(int patientId);
+        Task<IEnumerable<PatientResponse>> GetAllPatient();
     }
 }

@@ -1,41 +1,68 @@
 ﻿using Domain.User.Exceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
     public class User
     {
+        [Key]
         public int Id { get; set; }
         public string Name { get; set; }
         public string Fone { get; set; }
         public string Address { get; set; }
-        public string Email { get; set; }
 
-        private void Validate()
+        private string _email;
+        public string Email
         {
-            if (string.IsNullOrEmpty(Name))
+            get => _email;
+            set
             {
-                throw new MissingRequiredInformation();
-            }
+                if (!IsValidEmail(value))
+                {
+                    throw new InvalidEmailException("The given email is invalid.");
+                }
 
-            if (string.IsNullOrEmpty(Fone))
-            {
-                throw new MissingRequiredInformation();
+                _email = value;
             }
-
-            if (string.IsNullOrEmpty(Address))
-            {
-                throw new MissingRequiredInformation();
-            }
-
-            if (string.IsNullOrEmpty(Name))
-            {
-                throw new InvalidEmailException();
-            }
-
         }
 
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
 
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                throw new MissingRequiredInformationException("Name is required.");
+            }
 
+            if (string.IsNullOrWhiteSpace(Fone))
+            {
+                throw new MissingRequiredInformationException("Phone (Fone) is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(Address))
+            {
+                throw new MissingRequiredInformationException("Address is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                throw new InvalidEmailException("The given email is invalid.");
+            }
+        }
     }
 }

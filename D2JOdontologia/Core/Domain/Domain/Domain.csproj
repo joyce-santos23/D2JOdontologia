@@ -10,7 +10,6 @@
     <Folder Include="Consultation\Exceptions\" />
     <Folder Include="Procedure\Exceptions\" />
     <Folder Include="Schedule\Exceptions\" />
-    <Folder Include="Specialist\Exceptions\" />
     <Folder Include="Specialty\Exceptions\" />
   </ItemGroup>
 

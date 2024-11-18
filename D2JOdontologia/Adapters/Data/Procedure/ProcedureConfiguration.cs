@@ -12,7 +12,8 @@ namespace Data.Procedure
 
             builder.HasMany(p => p.Consultations)
                    .WithOne(c => c.Procedure)
-                   .HasForeignKey(c => c.ProcedureId);
+                   .HasForeignKey(c => c.ProcedureId)
+                   .OnDelete(DeleteBehavior.NoAction);
         }
 
     }

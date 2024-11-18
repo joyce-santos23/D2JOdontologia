@@ -16,11 +16,13 @@ namespace MedicalAppointmentSystem.Configurations
 
             builder.HasOne(s => s.Specialty)
                    .WithMany(sp => sp.Schedules)
-                   .HasForeignKey(s => s.SpecialtyId);
+                   .HasForeignKey(s => s.SpecialtyId)
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(s => s.Consultations)
                    .WithOne(c => c.Schedule)
-                   .HasForeignKey(c => c.ScheduleId);
+                   .HasForeignKey(c => c.ScheduleId)
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

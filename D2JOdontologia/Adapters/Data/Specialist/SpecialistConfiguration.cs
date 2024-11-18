@@ -9,11 +9,12 @@ namespace MedicalAppointmentSystem.Configurations
     {
         public void Configure(EntityTypeBuilder<Specialist> builder)
         {
-            builder.HasKey(s => s.Id);
+            builder.HasBaseType<Domain.Entities.User>();
 
             builder.HasOne(s => s.Specialty)
-                .WithMany(sp => sp.Specialists)
-                .HasForeignKey(s => s.SpecialtyId);
+            .WithMany(sp => sp.Specialists)
+            .HasForeignKey(s => s.SpecialtyId)
+            .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

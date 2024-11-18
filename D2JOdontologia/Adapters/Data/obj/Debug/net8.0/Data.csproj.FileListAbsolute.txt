@@ -16,3 +16,21 @@ C:\Users\donat\OneDrive\Área de Trabalho\FinalProject\D2JClínicaOdontológica\
 C:\Users\donat\OneDrive\Área de Trabalho\FinalProject\D2JClínicaOdontológica\Adapters\Data\obj\Debug\net8.0\Data.pdb
 C:\Users\donat\OneDrive\Área de Trabalho\FinalProject\D2JClínicaOdontológica\Adapters\Data\obj\Debug\net8.0\Data.genruntimeconfig.cache
 C:\Users\donat\OneDrive\Área de Trabalho\FinalProject\D2JClínicaOdontológica\Adapters\Data\obj\Debug\net8.0\ref\Data.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\bin\Debug\net8.0\Data.deps.json
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\bin\Debug\net8.0\Data.runtimeconfig.json
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\bin\Debug\net8.0\Data.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\bin\Debug\net8.0\Data.pdb
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\bin\Debug\net8.0\Domain.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\bin\Debug\net8.0\Domain.pdb
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.csproj.AssemblyReference.cache
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.AssemblyInfoInputs.cache
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.AssemblyInfo.cs
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.csproj.CoreCompileInputs.cache
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.sourcelink.json
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.csproj.Up2Date
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\refint\Data.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.pdb
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\Data.genruntimeconfig.cache
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Adapters\Data\obj\Debug\net8.0\ref\Data.dll
