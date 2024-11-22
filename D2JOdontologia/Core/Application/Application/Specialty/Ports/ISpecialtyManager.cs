@@ -1,6 +1,12 @@
-﻿namespace Application.Ports
+﻿using Application.Responses;
+using Application.Specialty.Responses;
+
+namespace Application.Ports
 {
-    internal interface ISpecialtyManager
+    public interface ISpecialtyManager
     {
+        Task<SpecialtyResponse> GetSpecialty(int Id);
+        public Task<SpecialtyListResponse> GetAllSpecialties();
+
     }
 }

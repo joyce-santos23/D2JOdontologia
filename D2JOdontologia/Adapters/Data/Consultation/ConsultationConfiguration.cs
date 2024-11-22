@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace Data.Patient
 {
@@ -10,18 +9,14 @@ namespace Data.Patient
         {
             builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.Status)
-                   .IsRequired()
-                   .HasMaxLength(50);
-
             builder.HasOne(c => c.Patient)
                    .WithMany(p => p.Consultations)
                    .HasForeignKey(c => c.PatientId)
                    .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(c => c.Procedure)
+            builder.HasOne(c => c.Patient)
                    .WithMany(p => p.Consultations)
-                   .HasForeignKey(c => c.ProcedureId)
+                   .HasForeignKey(c => c.PatientId)
                    .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(c => c.Schedule)

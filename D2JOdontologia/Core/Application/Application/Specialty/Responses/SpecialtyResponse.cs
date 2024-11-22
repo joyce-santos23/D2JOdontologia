@@ -1,6 +1,9 @@
-﻿namespace Application.Responses
+﻿using Application.Dtos;
+
+namespace Application.Responses
 {
-    public class SpecialtyResponse
+    public class SpecialtyResponse : Response
     {
+        public SpecialtyDto SpecialtyData;
     }
 }

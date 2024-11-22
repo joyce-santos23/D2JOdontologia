@@ -1,6 +1,9 @@
-﻿namespace Application.Responses
+﻿using Application.Dtos;
+
+namespace Application.Responses
 {
-    public class ScheduleResponse
+    public class ScheduleResponse : Response
     {
+        public ScheduleResponseDto ScheduleData;
     }
 }

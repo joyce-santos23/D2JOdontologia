@@ -1,20 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Domain.Entities;
-using System.Reflection.Emit;
+using SpecialtyEntity = Domain.Entities.Specialty;
+using SpecialistEntity = Domain.Entities.Specialist;
+using UserEntity = Domain.Entities.User;
 
-namespace MedicalAppointmentSystem.Configurations
+namespace Data.Specialist
 {
-    public class SpecialistConfiguration : IEntityTypeConfiguration<Domain.Entities.Specialist>
+    public class SpecialistConfiguration : IEntityTypeConfiguration<SpecialistEntity>
     {
-        public void Configure(EntityTypeBuilder<Specialist> builder)
+        public void Configure(EntityTypeBuilder<SpecialistEntity> builder)
         {
-            builder.HasBaseType<Domain.Entities.User>();
+            builder.HasBaseType<UserEntity>();
 
-            builder.HasOne(s => s.Specialty)
-            .WithMany(sp => sp.Specialists)
-            .HasForeignKey(s => s.SpecialtyId)
-            .OnDelete(DeleteBehavior.NoAction);
+            builder.HasMany(s => s.Specialties)
+                .WithMany(sp => sp.Specialists)
+                .UsingEntity<Dictionary<string, object>>(
+                    "SpecialistSpecialty", // Nome da tabela de junção
+                    j => j.HasOne<SpecialtyEntity>().WithMany().HasForeignKey("SpecialtyId").OnDelete(DeleteBehavior.NoAction),
+                    j => j.HasOne<SpecialistEntity>().WithMany().HasForeignKey("SpecialistId").OnDelete(DeleteBehavior.NoAction)
+                );
         }
     }
 }

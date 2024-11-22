@@ -9,6 +9,21 @@
         MISSING_REQUIRED_INFORMATION = 4,
         INVALID_EMAIL = 5,
 
+        //Specialty
+        SPECIALTY_NOT_FOUND = 6,
+
+        //Specialist
+        SPECIALIST_NOT_FOUND = 7,
+        INVALID_CRO = 8,
+
+        //Schedule
+        INVALID_SCHEDULE_DATES = 9,
+        SCHEDULE_NOT_FOUND = 10,
+
+        //Consultation
+        CONSULTATION_NOT_FOUND = 11,
+        INVALID_DATE = 12,
+
     }
 
     public abstract class Response

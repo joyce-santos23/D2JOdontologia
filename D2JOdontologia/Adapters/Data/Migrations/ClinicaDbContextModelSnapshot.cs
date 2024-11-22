@@ -30,52 +30,26 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProcedureId")
-                        .HasColumnType("int");
+                    b.Property<string>("Procedure")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ScheduleId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PatientId");
 
-                    b.HasIndex("ProcedureId");
-
                     b.HasIndex("ScheduleId");
 
                     b.ToTable("Consultation");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Procedure", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Cost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Procedure");
                 });
 
             modelBuilder.Entity("Domain.Entities.Schedule", b =>
@@ -89,15 +63,15 @@ namespace Data.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsFree")
+                    b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SpecialtyId")
+                    b.Property<int>("SpecialistId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpecialtyId");
+                    b.HasIndex("SpecialistId");
 
                     b.ToTable("Schedule");
                 });
@@ -110,10 +84,6 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -121,6 +91,48 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Specialty");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name = "Ortodontia"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Name = "Periodontia"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Name = "Endodontia"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Name = "Prótese Dentária"
+                        },
+                        new
+                        {
+                            Id = -5,
+                            Name = "Cirurgia Oral"
+                        },
+                        new
+                        {
+                            Id = -6,
+                            Name = "Odontopediatria"
+                        },
+                        new
+                        {
+                            Id = -7,
+                            Name = "Implantodontia"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            Name = "Odontologia Estética"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -161,6 +173,21 @@ namespace Data.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("SpecialistSpecialty", b =>
+                {
+                    b.Property<int>("SpecialistId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SpecialtyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SpecialistId", "SpecialtyId");
+
+                    b.HasIndex("SpecialtyId");
+
+                    b.ToTable("SpecialistSpecialty");
+                });
+
             modelBuilder.Entity("Domain.Entities.Patient", b =>
                 {
                     b.HasBaseType("Domain.Entities.User");
@@ -191,10 +218,13 @@ namespace Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SpecialtyId")
-                        .HasColumnType("int");
+                    b.Property<string>("CroNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("SpecialtyId");
+                    b.Property<string>("CroState")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Specialist");
                 });
@@ -207,12 +237,6 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Procedure", "Procedure")
-                        .WithMany("Consultations")
-                        .HasForeignKey("ProcedureId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Schedule", "Schedule")
                         .WithMany("Consultations")
                         .HasForeignKey("ScheduleId")
@@ -221,36 +245,33 @@ namespace Data.Migrations
 
                     b.Navigation("Patient");
 
-                    b.Navigation("Procedure");
-
                     b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("Domain.Entities.Schedule", b =>
                 {
-                    b.HasOne("Domain.Entities.Specialty", "Specialty")
+                    b.HasOne("Domain.Entities.Specialist", "Specialist")
                         .WithMany("Schedules")
-                        .HasForeignKey("SpecialtyId")
+                        .HasForeignKey("SpecialistId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Specialty");
+                    b.Navigation("Specialist");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Specialist", b =>
+            modelBuilder.Entity("SpecialistSpecialty", b =>
                 {
-                    b.HasOne("Domain.Entities.Specialty", "Specialty")
-                        .WithMany("Specialists")
-                        .HasForeignKey("SpecialtyId")
+                    b.HasOne("Domain.Entities.Specialist", null)
+                        .WithMany()
+                        .HasForeignKey("SpecialistId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Specialty");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Procedure", b =>
-                {
-                    b.Navigation("Consultations");
+                    b.HasOne("Domain.Entities.Specialty", null)
+                        .WithMany()
+                        .HasForeignKey("SpecialtyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Schedule", b =>
@@ -258,16 +279,14 @@ namespace Data.Migrations
                     b.Navigation("Consultations");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Specialty", b =>
-                {
-                    b.Navigation("Schedules");
-
-                    b.Navigation("Specialists");
-                });
-
             modelBuilder.Entity("Domain.Entities.Patient", b =>
                 {
                     b.Navigation("Consultations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Specialist", b =>
+                {
+                    b.Navigation("Schedules");
                 });
 #pragma warning restore 612, 618
         }

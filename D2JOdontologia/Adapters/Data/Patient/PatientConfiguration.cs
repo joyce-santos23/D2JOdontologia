@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
+using UserEntity = Domain.Entities.User;
+using PatientEntity = Domain.Entities.Patient;
 
 namespace Data.Patient
 {
-    public class PatientConfiguration : IEntityTypeConfiguration<Domain.Entities.Patient>
+    public class PatientConfiguration : IEntityTypeConfiguration<PatientEntity>
     {
-        public void Configure(EntityTypeBuilder<Domain.Entities.Patient> builder)
+        public void Configure(EntityTypeBuilder<PatientEntity> builder)
         {
-            builder.HasBaseType<Domain.Entities.User>();
+            builder.HasBaseType<UserEntity>();
 
             builder.HasMany(p => p.Consultations)
                 .WithOne(c => c.Patient)

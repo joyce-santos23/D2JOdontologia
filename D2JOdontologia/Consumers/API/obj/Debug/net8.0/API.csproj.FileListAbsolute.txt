@@ -282,3 +282,7 @@ C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\obj\Debug\net8.0\API.
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\obj\Debug\net8.0\ref\API.dll
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Application.dll
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Application.pdb
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Scrutor.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Filters.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

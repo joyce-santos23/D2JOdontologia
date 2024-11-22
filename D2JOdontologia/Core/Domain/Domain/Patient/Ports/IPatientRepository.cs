@@ -1,11 +1,11 @@
-﻿using Domain.Entities;
+﻿using PatientEntity = Domain.Entities.Patient;
 
 namespace Domain.Ports
 {
     public interface IPatientRepository
     {
-        Task<Domain.Entities.Patient> Get(int Id);
-        Task<IEnumerable<Domain.Entities.Patient>> GetAll();
-        Task<int> Create(Domain.Entities.Patient patient);
+        Task<PatientEntity> Get(int Id);
+        Task<IEnumerable<PatientEntity>> GetAll();
+        Task<int> Create(PatientEntity patient);
     }
 }

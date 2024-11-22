@@ -14,9 +14,9 @@ namespace MedicalAppointmentSystem.Configurations
             builder.Property(s => s.Data)
                    .IsRequired();
 
-            builder.HasOne(s => s.Specialty)
+            builder.HasOne(s => s.Specialist)
                    .WithMany(sp => sp.Schedules)
-                   .HasForeignKey(s => s.SpecialtyId)
+                   .HasForeignKey(s => s.SpecialistId)
                    .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(s => s.Consultations)

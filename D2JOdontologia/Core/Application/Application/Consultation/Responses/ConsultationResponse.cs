@@ -1,6 +1,9 @@
-﻿namespace Application.Responses
+﻿using Application.Dtos;
+
+namespace Application.Responses
 {
-    public class ConsultationResponse
+    public class ConsultationResponse : Response
     {
+        public ConsultationResponseDto ConsultationData;
     }
 }

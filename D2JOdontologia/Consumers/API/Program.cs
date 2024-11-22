@@ -1,20 +1,26 @@
+using Application.Consultation;
 using Application.Patient;
 using Application.Ports;
+using Application.Schedule;
+using Application.Specialist;
+using Application.Specialty;
 using Consumers.API.Serialization;
 using Data;
+using Data.Consultation;
 using Data.Patient;
+using Data.Repositories;
+using Data.Schedule;
+using Data.Specialist;
 using Domain.Ports;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add(new InvalidJsonInputFilter()); // Adiciona o filtro global
-})
+builder.Services.AddControllers()
 .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()); // Registra o conversor DateOnly
@@ -25,6 +31,16 @@ builder.Services.AddScoped<IPatientManager, PatientManager>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
 #endregion
+builder.Services.AddScoped<IConsultationManager, ConsultationManager>();
+builder.Services.AddScoped<IConsultationRepository, ConsultationRepository>();
+builder.Services.AddScoped<IPatientManager, PatientManager>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IScheduleManager, ScheduleManager>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<ISpecialistManager, SpecialistManager>();
+builder.Services.AddScoped<ISpecialistRepository, SpecialistRepository>();
+builder.Services.AddScoped<ISpecialtyManager, SpecialtyManager>();
+builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
 
 #region
 
@@ -36,6 +52,9 @@ builder.Services.AddDbContext<ClinicaDbContext>(
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<ScheduleDtoExample>();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -56,7 +75,10 @@ builder.Services.AddSwaggerGen(c =>
             Url = new Uri("https://github.com/joyce-santos23")
         }
     });
-    c.OperationFilter<AddErrorResponsesFilter>();
+
+    c.EnableAnnotations();
+    c.ExampleFilters();
+
 });
 
 
@@ -75,7 +97,7 @@ app.UseExceptionHandler(errorApp =>
         {
             await context.Response.WriteAsJsonAsync(new
             {
-                error = error.Message // Mensagem detalhada do erro
+                error = error.Message 
             });
         }
     });
