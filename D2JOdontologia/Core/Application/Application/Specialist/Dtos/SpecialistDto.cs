@@ -4,7 +4,6 @@ namespace Application.Dtos
 {
     public class SpecialistDto
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Fone { get; set; }
         public string Address { get; set; }
@@ -18,14 +17,12 @@ namespace Application.Dtos
         {
             return new SpecialistDto
             {
-                Id = specialist.Id,
                 Name = specialist.Name,
                 Fone = specialist.Fone,
                 Address = specialist.Address,
                 Email = specialist.Email,
                 CroNumber = specialist.CroNumber,
                 CroState = specialist.CroState,
-                CreatedAt = specialist.CreatedAt,
                 SpecialtyIds = specialist.Specialties.Select(s => s.Id).ToList()
             };
         }
@@ -34,14 +31,12 @@ namespace Application.Dtos
         {
             return new SpecialistEntity
             {
-                Id = specialistDto.Id,
                 Name = specialistDto.Name,
                 Fone = specialistDto.Fone,
                 Address = specialistDto.Address,
                 Email = specialistDto.Email,
                 CroNumber = specialistDto.CroNumber,
                 CroState = specialistDto.CroState,
-                CreatedAt = specialistDto.CreatedAt,
                 Specialties = specialistDto.SpecialtyIds.Select(id => new SpecialtyEntity { Id = id }).ToList()
             };
         }

@@ -259,6 +259,43 @@ namespace Application.Consultation
             }
         }
 
+        public async Task<ConsultationListResponse> GetAllConsultations()
+        {
+            try
+            {
+                var consultations = await _consultationRepository.GetAll();
+
+                if (!consultations.Any())
+                {
+                    return new ConsultationListResponse
+                    {
+                        Success = false,
+                        ErrorCode = ErrorCode.CONSULTATION_NOT_FOUND,
+                        Message = "No consultations found."
+                    };
+                }
+
+                var responseDtos = consultations.Select(ConsultationResponseDto.MapToResponseDto).ToList();
+
+                return new ConsultationListResponse
+                {
+                    Success = true,
+                    Data = responseDtos,
+                    Message = "All consultations retrieved successfully."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ConsultationListResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.COULD_NOT_STORE_DATA,
+                    Message = $"Error retrieving all consultations: {ex.Message}"
+                };
+            }
+        }
+
+
         public async Task<ConsultationResponse> UpdateConsultation(int id, ConsultationUpdateRequestDto consultationDto)
         {
             try

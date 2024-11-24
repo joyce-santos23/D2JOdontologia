@@ -11,5 +11,7 @@ namespace Domain.Ports
         Task<IEnumerable<ConsultationEntity>> GetBySpecialist(int specialistId);
         Task<ConsultationEntity> Get(int id);
         Task Update(ConsultationEntity consultation);
+        Task<IEnumerable<ConsultationEntity>> GetAll();
+
     }
 }

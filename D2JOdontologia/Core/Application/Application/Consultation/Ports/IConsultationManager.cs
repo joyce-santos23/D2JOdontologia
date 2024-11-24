@@ -13,5 +13,7 @@ namespace Application.Ports
         Task<ConsultationListResponse> GetConsultationsByPatient(int patientId);
         Task<ConsultationListResponse> GetConsultationsBySpecialist(int specialistId);
         Task<ConsultationResponse> UpdateConsultation(int id, ConsultationUpdateRequestDto consultationDto);
+        Task<ConsultationListResponse> GetAllConsultations();
+
     }
 }

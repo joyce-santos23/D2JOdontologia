@@ -68,5 +68,15 @@ namespace Data.Consultation
             _clinicaDbContext.Consultation.Update(consultation);
             await _clinicaDbContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<ConsultationEntity>> GetAll()
+        {
+            return await _clinicaDbContext.Consultation
+                .Include(c => c.Patient)
+                .Include(c => c.Schedule)
+                .ThenInclude(s => s.Specialist)
+                .ToListAsync();
+        }
+
     }
 }

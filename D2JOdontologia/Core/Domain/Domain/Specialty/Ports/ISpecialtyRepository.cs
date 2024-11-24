@@ -6,6 +6,7 @@ namespace Domain.Ports
     {
         Task<List<SpecialtyEntity>> GetAll();
         Task<SpecialtyEntity> Get(int id);
+        Task<List<SpecialtyEntity>> GetByIds(List<int> ids);
 
     }
 }

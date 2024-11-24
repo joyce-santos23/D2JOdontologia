@@ -71,5 +71,25 @@ namespace API.Controllers
             };
         }
 
+        [HttpPut("{specialistId}/update")]
+        public async Task<IActionResult> UpdateSpecialist(int specialistId, [FromBody] UpdateSpecialistDto updateRequestDto)
+        {
+            var updateRequest = new UpdateSpecialistRequest
+            {
+                SpecialistData = updateRequestDto
+            };
+
+            var response = await _specialistManager.UpdateSpecialist(specialistId, updateRequest);
+
+            if (response.Success)
+                return Ok(response.SpecialistData);
+
+            _logger.LogError("Failed to update specialist: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
+
+            return MapErrorToResponse(response.ErrorCode, response.Message);
+        }
+
+
+
     }
 }

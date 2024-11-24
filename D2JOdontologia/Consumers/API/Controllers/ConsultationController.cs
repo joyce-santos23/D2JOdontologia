@@ -27,14 +27,18 @@ namespace API.Controllers
                 return CreatedAtAction(nameof(GetConsultation), new { id = response.ConsultationData.Id }, response.ConsultationData);
 
             _logger.LogError("Failed to create consultation: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
+            return MapErrorToResponse(response.ErrorCode, response.Message);
+        }
 
-            return response.ErrorCode switch
-            {
-                Application.ErrorCode.PATIENT_NOT_FOUND => BadRequest(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                Application.ErrorCode.SCHEDULE_NOT_FOUND => BadRequest(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                Application.ErrorCode.INVALID_DATE => BadRequest(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = response.ErrorCode })
-            };
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllConsultations()
+        {
+            var response = await _consultationManager.GetAllConsultations();
+
+            if (!response.Success)
+                return MapErrorToResponse(response.ErrorCode, response.Message);
+
+            return Ok(response.Data);
         }
 
         [HttpGet("{id}")]
@@ -46,12 +50,7 @@ namespace API.Controllers
                 return Ok(response.ConsultationData);
 
             _logger.LogError("Failed to retrieve consultation: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
-
-            return response.ErrorCode switch
-            {
-                Application.ErrorCode.CONSULTATION_NOT_FOUND => NotFound(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = response.ErrorCode })
-            };
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
         [HttpGet("by-date/{date}")]
@@ -63,12 +62,7 @@ namespace API.Controllers
                 return Ok(response.Data);
 
             _logger.LogError("Failed to retrieve consultations by date: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
-
-            return response.ErrorCode switch
-            {
-                Application.ErrorCode.CONSULTATION_NOT_FOUND => NotFound(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = response.ErrorCode })
-            };
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
         [HttpGet("by-patient/{patientId}")]
@@ -80,12 +74,7 @@ namespace API.Controllers
                 return Ok(response.Data);
 
             _logger.LogError("Failed to retrieve consultations by patient: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
-
-            return response.ErrorCode switch
-            {
-                Application.ErrorCode.CONSULTATION_NOT_FOUND => NotFound(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = response.ErrorCode })
-            };
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
         [HttpGet("by-specialist/{specialistId}")]
@@ -97,12 +86,7 @@ namespace API.Controllers
                 return Ok(response.Data);
 
             _logger.LogError("Failed to retrieve consultations by specialist: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
-
-            return response.ErrorCode switch
-            {
-                Application.ErrorCode.CONSULTATION_NOT_FOUND => NotFound(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = response.ErrorCode })
-            };
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
         [HttpPut("{id}")]
@@ -114,13 +98,20 @@ namespace API.Controllers
                 return Ok(response.ConsultationData);
 
             _logger.LogError("Failed to update consultation: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
-
-            return response.ErrorCode switch
-            {
-                Application.ErrorCode.CONSULTATION_NOT_FOUND => NotFound(new { Message = response.Message, ErrorCode = response.ErrorCode }),
-                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = response.ErrorCode })
-            };
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        private IActionResult MapErrorToResponse(Application.ErrorCode errorCode, string message)
+        {
+            return errorCode switch
+            {
+                Application.ErrorCode.PATIENT_NOT_FOUND => NotFound(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.SCHEDULE_NOT_FOUND => NotFound(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.CONSULTATION_NOT_FOUND => NotFound(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.INVALID_DATE => BadRequest(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.COULD_NOT_STORE_DATA => StatusCode(500, new { Message = message, ErrorCode = errorCode }),
+                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = errorCode })
+            };
+        }
     }
 }

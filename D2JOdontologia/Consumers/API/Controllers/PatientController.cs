@@ -19,62 +19,74 @@ namespace API.Controllers
             _patientManager = patientManager;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<PatientDto>> Post(PatientDto patient)
+        [HttpPost("create")]
+        public async Task<IActionResult> CreatePatient([FromBody] PatientDto request)
         {
-            var request = new CreatePatientRequest
+            var requestObj = new CreatePatientRequest
             {
-                PatientData = patient
+                PatientData = request
             };
 
-            var res = await _patientManager.CreatePatient(request);
+            var response = await _patientManager.CreatePatient(requestObj);
 
-            if (res.Success)
-                return CreatedAtAction(nameof(Get), new { id = res.PatientData.Id }, res.PatientData);
+            if (response.Success)
+                return CreatedAtAction(nameof(GetPatient), new { id = response.PatientData.Id }, response.PatientData);
 
-            _logger.LogError("Failed to create patient: {ErrorCode} - {Message}", res.ErrorCode, res.Message);
+            _logger.LogError("Failed to create patient: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
 
-            return res.ErrorCode switch
-            {
-                Application.ErrorCode.MISSING_REQUIRED_INFORMATION => BadRequest(new { Message = res.Message, ErrorCode = res.ErrorCode }),
-                Application.ErrorCode.COULD_NOT_STORE_DATA => BadRequest(new { Message = res.Message, ErrorCode = res.ErrorCode }),
-                Application.ErrorCode.INVALID_EMAIL => BadRequest(new { Message = res.Message, ErrorCode = res.ErrorCode }),
-
-                _ => BadRequest(new { Message = "An error occurred while creating the patient." })
-            };
-
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllPatients()
+        {
+            var response = await _patientManager.GetAllPatient();
+
+            if (!response.Any())
+                return MapErrorToResponse(Application.ErrorCode.PATIENT_NOT_FOUND, "No patient records found.");
+
+            return Ok(response.Select(p => p.PatientData));
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PatientDto>> Get(int id)
+        public async Task<IActionResult> GetPatient(int id)
         {
-            var res = await _patientManager.GetPatient(id);
+            var response = await _patientManager.GetPatient(id);
 
-            if (res.Success)
-                return Ok(res.PatientData);
+            if (!response.Success)
+                return MapErrorToResponse(Application.ErrorCode.PATIENT_NOT_FOUND, $"Patient with ID {id} not found.");
 
-            return NotFound(new { message = "Patient not found" });
+            return Ok(response.PatientData);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatientDto>>> GetAll()
+        [HttpPut("{id}/update")]
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto updateRequest)
         {
-            var patients = await _patientManager.GetAllPatient();
-
-            if (!patients.Any())
+            var updateRequestObj = new UpdatePatientRequest
             {
-                return NotFound(new PatientResponse
-                {
-                    Success = false,
-                    Message = "No rooms records were found"
-                });
+                PatientData = updateRequest
+            };
 
-            }
-            var patientDtos = patients.Select(g => g.PatientData).ToList();
-            return Ok(patientDtos);
+            var response = await _patientManager.UpdatePatient(id, updateRequestObj);
 
+            if (response.Success)
+                return Ok(response.PatientData);
+
+            _logger.LogError("Failed to update patient: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
+
+            return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        private IActionResult MapErrorToResponse(Application.ErrorCode errorCode, string message)
+        {
+            return errorCode switch
+            {
+                Application.ErrorCode.MISSING_REQUIRED_INFORMATION => BadRequest(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.COULD_NOT_STORE_DATA => BadRequest(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.INVALID_EMAIL => BadRequest(new { Message = message, ErrorCode = errorCode }),
+                Application.ErrorCode.PATIENT_NOT_FOUND => NotFound(new { Message = message, ErrorCode = errorCode }),
+                _ => StatusCode(500, new { Message = "An unexpected error occurred.", ErrorCode = errorCode })
+            };
+        }
     }
 }

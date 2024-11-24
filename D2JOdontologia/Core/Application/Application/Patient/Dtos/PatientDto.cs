@@ -4,7 +4,6 @@ namespace Application.Dtos
 {
     public class PatientDto
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Fone { get; set; }
         public string Address { get; set; }
@@ -17,7 +16,6 @@ namespace Application.Dtos
         {
             return new PatientDto
             {
-                Id = patient.Id,
                 Name = patient.Name,
                 Fone = patient.Fone,
                 Address = patient.Address,
@@ -32,7 +30,6 @@ namespace Application.Dtos
         {
             return new Domain.Entities.Patient
             {
-                Id = patientDto.Id,
                 Name = patientDto.Name,
                 Fone = patientDto.Fone,
                 Address = patientDto.Address,

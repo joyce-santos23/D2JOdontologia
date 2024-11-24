@@ -22,5 +22,12 @@ namespace Data.Repositories
         {
             return await _clinicaDbContext.Specialty.FirstOrDefaultAsync(s => s.Id == id);
         }
+
+        public async Task<List<SpecialtyEntity>> GetByIds(List<int> ids)
+        {
+            return await _clinicaDbContext.Specialty
+                .Where(s => ids.Contains(s.Id))
+                .ToListAsync();
+        }
     }
 }

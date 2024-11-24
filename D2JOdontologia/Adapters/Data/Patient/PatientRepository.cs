@@ -1,5 +1,6 @@
 ﻿using Domain.Ports;
 using Microsoft.EntityFrameworkCore;
+using PatientEntity = Domain.Entities.Patient;
 
 namespace Data.Patient
 {
@@ -12,7 +13,7 @@ namespace Data.Patient
             _clinicaDbContext = clinicaDbContext;
         }
 
-        public async Task<int> Create(Domain.Entities.Patient patient)
+        public async Task<int> Create(PatientEntity patient)
         {
             _clinicaDbContext.Patient.Add(patient);
             await _clinicaDbContext.SaveChangesAsync();
@@ -20,14 +21,21 @@ namespace Data.Patient
 
         }
 
-        public async Task<Domain.Entities.Patient> Get(int Id)
+        public async Task<PatientEntity> Get(int Id)
         {
             return await _clinicaDbContext.Patient.Where(p => p.Id == Id).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Domain.Entities.Patient>> GetAll()
+        public async Task<IEnumerable<PatientEntity>> GetAll()
         {
             return await _clinicaDbContext.Patient.ToListAsync();
         }
+
+        public async Task Update(PatientEntity patient)
+        {
+            _clinicaDbContext.Patient.Update(patient);
+            await _clinicaDbContext.SaveChangesAsync();
+        }
+
     }
 }

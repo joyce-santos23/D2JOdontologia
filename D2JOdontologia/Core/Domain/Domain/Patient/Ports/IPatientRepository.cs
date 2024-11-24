@@ -7,5 +7,6 @@ namespace Domain.Ports
         Task<PatientEntity> Get(int Id);
         Task<IEnumerable<PatientEntity>> GetAll();
         Task<int> Create(PatientEntity patient);
+        Task Update(PatientEntity patient);
     }
 }

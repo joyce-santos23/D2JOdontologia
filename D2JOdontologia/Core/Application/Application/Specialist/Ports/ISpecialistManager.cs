@@ -8,6 +8,8 @@ namespace Application.Ports
     {
         Task<SpecialistResponse> CreateSpecialist(CreateSpecialistRequest request);
         Task<SpecialistResponse> GetSpecialist(int Id);
-        Task<IEnumerable<SpecialistDto>> GetAllSpecialists();
+        Task<IEnumerable<SpecialistResponseDto>> GetAllSpecialists();
+        Task<SpecialistResponse> UpdateSpecialist(int id, UpdateSpecialistRequest updateRequest);
+
     }
 }

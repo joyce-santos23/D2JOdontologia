@@ -3,6 +3,7 @@ using Application.Ports;
 using Application.Responses;
 using Application.Specialist.Requests;
 using Domain.Ports;
+using Domain.Schedule.Exceptions;
 using Domain.Specialist.Exceptions;
 using Domain.User.Exceptions;
 
@@ -39,11 +40,9 @@ namespace Application.Specialist
 
                 await specialist.Save(_specialistRepository);
 
-                request.SpecialistData.Id = specialist.Id;
-
                 return new SpecialistResponse
                 {
-                    SpecialistData = SpecialistDto.MapToDto(specialist),
+                    SpecialistData = SpecialistResponseDto.MapToResponseDto(specialist),
                     Success = true,
                     Message = "Specialist created successfully!"
                 };
@@ -96,11 +95,11 @@ namespace Application.Specialist
 
         }
 
-        public async Task<IEnumerable<SpecialistDto>> GetAllSpecialists()
+        public async Task<IEnumerable<SpecialistResponseDto>> GetAllSpecialists()
         {
             var specialists = await _specialistRepository.GetAll();
 
-            var responseList = specialists.Select(s => SpecialistDto.MapToDto(s)).ToList();
+            var responseList = specialists.Select(s => SpecialistResponseDto.MapToResponseDto(s)).ToList();
 
             return responseList;
         }
@@ -119,9 +118,84 @@ namespace Application.Specialist
 
             return new SpecialistResponse
             {
-                SpecialistData = SpecialistDto.MapToDto(specialist),
+                SpecialistData = SpecialistResponseDto.MapToResponseDto(specialist),
                 Success = true,
             };
         }
+
+        public async Task<SpecialistResponse> UpdateSpecialist(int id, UpdateSpecialistRequest updateRequest)
+        {
+            try
+            {
+                var specialist = await _specialistRepository.Get(id);
+                if (specialist == null)
+                    throw new SpecialistNotFoundException($"Specialist with ID {id} not found.");
+
+                var data = updateRequest.SpecialistData;
+
+                if (!string.IsNullOrWhiteSpace(data.Address))
+                    specialist.Address = data.Address;
+
+                if (!string.IsNullOrWhiteSpace(data.Fone))
+                    specialist.Fone = data.Fone;
+
+                if (data.SpecialtyIds != null && data.SpecialtyIds.Any())
+                {
+                    var existingSpecialtyIds = specialist.Specialties.Select(s => s.Id).ToList();
+                    var newSpecialtyIds = data.SpecialtyIds.Except(existingSpecialtyIds).ToList();
+
+                    if (newSpecialtyIds.Any())
+                    {
+                        var newSpecialties = await _specialtyRepository.GetByIds(newSpecialtyIds);
+                        if (!newSpecialties.Any())
+                            throw new InvalidSpecialtyException("Some or all provided specialty IDs are invalid.");
+
+                        foreach (var specialty in newSpecialties)
+                        {
+                            specialist.Specialties.Add(specialty);
+                        }
+                    }
+                }
+
+                await _specialistRepository.Update(specialist);
+
+                return new SpecialistResponse
+                {
+                    Success = true,
+                    SpecialistData = SpecialistResponseDto.MapToResponseDto(specialist),
+                    Message = "Specialist updated successfully."
+                };
+            }
+            catch (SpecialistNotFoundException ex)
+            {
+                return new SpecialistResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.SPECIALIST_NOT_FOUND,
+                    Message = ex.Message
+                };
+            }
+            catch (InvalidSpecialtyException ex)
+            {
+                return new SpecialistResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.SPECIALTY_NOT_FOUND,
+                    Message = ex.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                return new SpecialistResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.COULD_NOT_STORE_DATA,
+                    Message = $"Error updating specialist: {ex.Message}"
+                };
+            }
+        }
+
+
+
     }
 }

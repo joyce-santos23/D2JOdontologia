@@ -22,12 +22,14 @@ namespace Application.Patient
             {
                 var patient = PatientDto.MapToEntity(request.PatientData);
                 await patient.Save(_patientRepository);
-                request.PatientData.Id = patient.Id;
+
+                var responseDto = PatientResponseDto.MapToResponseDto(patient);
 
                 return new PatientResponse
                 {
-                    PatientData = request.PatientData,
-                    Success = true, 
+                    PatientData = responseDto,
+                    Success = true,
+                    Message = "Patient created successfully."
                 };
             }
             catch (MissingRequiredInformationException ex)
@@ -88,7 +90,7 @@ namespace Application.Patient
                 responseList.Add(new PatientResponse
                 {
                     Success = true,
-                    PatientData = PatientDto.MapToDto(patient)
+                    PatientData = PatientResponseDto.MapToResponseDto(patient)
                 });
             }
             return responseList;
@@ -110,8 +112,52 @@ namespace Application.Patient
             return new PatientResponse
             {
                 Success = true,
-                PatientData = PatientDto.MapToDto(patient)
+                PatientData = PatientResponseDto.MapToResponseDto(patient)
             };
         }
+
+        public async Task<PatientResponse> UpdatePatient(int patientId, UpdatePatientRequest updateRequest)
+        {
+            try
+            {
+                var patient = await _patientRepository.Get(patientId);
+                if (patient == null)
+                    throw new PatientNotFoundException();
+
+                if (!string.IsNullOrWhiteSpace(updateRequest.PatientData.Address))
+                    patient.Address = updateRequest.PatientData.Address;
+
+                if (!string.IsNullOrWhiteSpace(updateRequest.PatientData.Fone))
+                    patient.Fone = updateRequest.PatientData.Fone;
+
+                await _patientRepository.Update(patient);
+
+                return new PatientResponse
+                {
+                    Success = true,
+                    PatientData = PatientResponseDto.MapToResponseDto(patient),
+                    Message = "Patient updated successfully."
+                };
+            }
+            catch (PatientNotFoundException)
+            {
+                return new PatientResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.PATIENT_NOT_FOUND,
+                    Message = "Patient not found."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new PatientResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.COULD_NOT_STORE_DATA,
+                    Message = $"Error updating patient: {ex.Message}"
+                };
+            }
+        }
+
     }
 }
