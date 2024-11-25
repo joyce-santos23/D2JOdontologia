@@ -37,6 +37,7 @@ namespace Application.Specialist
                     existingSpecialties.Add(specialty);
                 }
                 specialist.Specialties = existingSpecialties;
+                specialist.SetPassword(request.SpecialistData.Password);
 
                 await specialist.Save(_specialistRepository);
 

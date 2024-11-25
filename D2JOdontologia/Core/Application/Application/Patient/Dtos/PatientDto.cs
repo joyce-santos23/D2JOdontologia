@@ -8,6 +8,7 @@ namespace Application.Dtos
         public string Fone { get; set; }
         public string Address { get; set; }
         public string Email { get; set; }
+        public string Password { get; set; }
         public DateOnly Birth { get; set; }
         public string Cpf { get; set; }
         public DateTime CreatedAt { get; set; } 
@@ -20,6 +21,7 @@ namespace Application.Dtos
                 Fone = patient.Fone,
                 Address = patient.Address,
                 Email = patient.Email,
+                Password = patient.PasswordHash,
                 Birth = patient.Birth,
                 Cpf = patient.Cpf,
                 CreatedAt = patient.CreatedAt
@@ -34,6 +36,7 @@ namespace Application.Dtos
                 Fone = patientDto.Fone,
                 Address = patientDto.Address,
                 Email = patientDto.Email,
+                PasswordHash = patientDto.Password,
                 Birth = patientDto.Birth,
                 Cpf = patientDto.Cpf,
                 CreatedAt = patientDto.CreatedAt

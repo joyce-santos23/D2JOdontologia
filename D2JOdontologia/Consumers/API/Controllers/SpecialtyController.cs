@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Ports;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -18,6 +19,7 @@ namespace API.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetAllSpecialties()
         {
             var response = await _specialtyManager.GetAllSpecialties();
@@ -31,6 +33,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetSpecialty(int id)
         {
             var response = await _specialtyManager.GetSpecialty(id);

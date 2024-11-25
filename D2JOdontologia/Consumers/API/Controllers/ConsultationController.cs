@@ -1,6 +1,7 @@
 ﻿using Application.Consultation.Dtos;
 using Application.Dtos;
 using Application.Ports;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -19,6 +20,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> CreateConsultation([FromBody] ConsultationRequestDto consultationDto)
         {
             var response = await _consultationManager.CreateConsultation(consultationDto);
@@ -31,6 +33,7 @@ namespace API.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> GetAllConsultations()
         {
             var response = await _consultationManager.GetAllConsultations();
@@ -42,6 +45,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultation(int id)
         {
             var response = await _consultationManager.GetConsultation(id);
@@ -54,6 +58,7 @@ namespace API.Controllers
         }
 
         [HttpGet("by-date/{date}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultationsByDate(DateTime date)
         {
             var response = await _consultationManager.GetConsultationsByDate(date);
@@ -66,6 +71,7 @@ namespace API.Controllers
         }
 
         [HttpGet("by-patient/{patientId}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultationsByPatient(int patientId)
         {
             var response = await _consultationManager.GetConsultationsByPatient(patientId);
@@ -78,6 +84,7 @@ namespace API.Controllers
         }
 
         [HttpGet("by-specialist/{specialistId}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultationsBySpecialist(int specialistId)
         {
             var response = await _consultationManager.GetConsultationsBySpecialist(specialistId);
@@ -90,6 +97,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> UpdateConsultation(int id, [FromBody] ConsultationUpdateRequestDto consultationDto)
         {
             var response = await _consultationManager.UpdateConsultation(id, consultationDto);

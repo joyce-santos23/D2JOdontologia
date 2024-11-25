@@ -21,6 +21,7 @@ namespace Application.Patient
             try
             {
                 var patient = PatientDto.MapToEntity(request.PatientData);
+                patient.SetPassword(request.PatientData.Password);
                 await patient.Save(_patientRepository);
 
                 var responseDto = PatientResponseDto.MapToResponseDto(patient);

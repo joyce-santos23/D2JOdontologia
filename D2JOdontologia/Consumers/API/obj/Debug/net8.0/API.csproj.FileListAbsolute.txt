@@ -286,3 +286,9 @@ C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Scru
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Annotations.dll
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Filters.dll
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Microsoft.Owin.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Microsoft.Owin.Security.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Microsoft.Owin.Security.Cookies.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Consumers\API\bin\Debug\net8.0\Owin.dll

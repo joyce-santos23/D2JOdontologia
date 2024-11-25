@@ -2,6 +2,7 @@
 using Application.Patient.Requests;
 using Application.Ports;
 using Application.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -20,6 +21,7 @@ namespace API.Controllers
         }
 
         [HttpPost("create")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreatePatient([FromBody] PatientDto request)
         {
             var requestObj = new CreatePatientRequest
@@ -38,6 +40,7 @@ namespace API.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetAllPatients()
         {
             var response = await _patientManager.GetAllPatient();
@@ -49,6 +52,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetPatient(int id)
         {
             var response = await _patientManager.GetPatient(id);
@@ -60,6 +64,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}/update")]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto updateRequest)
         {
             var updateRequestObj = new UpdatePatientRequest

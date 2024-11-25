@@ -25,6 +25,8 @@ namespace Domain.Entities
                 _email = value;
             }
         }
+        public string PasswordHash { get; set; } 
+        public string Role { get; set; }
 
         private bool IsValidEmail(string email)
         {
@@ -40,6 +42,21 @@ namespace Domain.Entities
             {
                 return false;
             }
+        }
+
+        public void SetPassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+            {
+                throw new MissingRequiredInformationException("Password must be at least 6 characters long.");
+            }
+
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        public bool VerifyPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, PasswordHash);
         }
 
         public void Validate()

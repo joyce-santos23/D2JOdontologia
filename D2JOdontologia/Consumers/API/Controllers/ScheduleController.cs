@@ -4,6 +4,7 @@ using Application.Ports;
 using Application.Schedule.Requests;
 using Application.Specialist.Requests;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
 using RouteAttribute = Microsoft.AspNetCore.Components.RouteAttribute;
@@ -24,6 +25,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Create")]
+        [Authorize(Roles = "Specialist")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [SwaggerRequestExample(typeof(ScheduleRequestDto), typeof(ScheduleDtoExample))]
         public async Task<IActionResult> CreateSchedules([FromBody] ScheduleRequestDto schedule)
@@ -47,6 +49,7 @@ namespace API.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetAllSchedules()
         {
             var response = await _scheduleManager.GetAllSchedules();
@@ -64,6 +67,7 @@ namespace API.Controllers
 
 
         [HttpGet("{scheduleId}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetSchedule(int scheduleId)
         {
             var response = await _scheduleManager.GetSchedule(scheduleId);
@@ -80,6 +84,7 @@ namespace API.Controllers
 
 
         [HttpGet("byDate")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetSchedulesByDate([FromQuery] DateTime date)
         {
             var response = await _scheduleManager.GetSchedulesByDate(date);
@@ -96,6 +101,7 @@ namespace API.Controllers
         }
 
         [HttpGet("available/{specialistId}")]
+        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetAvailableSchedules(int specialistId)
         {
             var response = await _scheduleManager.GetAvailableSchedules(specialistId);
@@ -113,6 +119,7 @@ namespace API.Controllers
 
 
         [HttpPut("{scheduleId}/availability")]
+        [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> UpdateScheduleAvailability(int scheduleId, [FromBody] bool isAvailable)
         {
             var response = await _scheduleManager.UpdateScheduleAvailability(scheduleId, isAvailable);

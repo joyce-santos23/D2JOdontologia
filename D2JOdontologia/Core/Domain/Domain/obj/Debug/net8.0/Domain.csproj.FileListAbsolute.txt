@@ -22,3 +22,4 @@ C:\Users\joyce\D2JOdontologia\D2JOdontologia\Core\Domain\Domain\obj\Debug\net8.0
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Core\Domain\Domain\obj\Debug\net8.0\refint\Domain.dll
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Core\Domain\Domain\obj\Debug\net8.0\Domain.pdb
 C:\Users\joyce\D2JOdontologia\D2JOdontologia\Core\Domain\Domain\obj\Debug\net8.0\ref\Domain.dll
+C:\Users\joyce\D2JOdontologia\D2JOdontologia\Core\Domain\Domain\obj\Debug\net8.0\Domain.csproj.AssemblyReference.cache

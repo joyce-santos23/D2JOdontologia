@@ -4,6 +4,7 @@ using Application.Patient.Requests;
 using Application.Ports;
 using Application.Specialist.Requests;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -22,6 +23,7 @@ namespace API.Controllers
         }
 
         [HttpPost("create")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateSpecialist([FromBody] SpecialistDto specialist)
         {
             var request = new CreateSpecialistRequest
@@ -40,6 +42,7 @@ namespace API.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> GetAllSpecialists()
         {
             var response = await _specialistManager.GetAllSpecialists();
@@ -47,6 +50,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> GetSpecialist(int id)
         {
             var response = await _specialistManager.GetSpecialist(id);
@@ -72,6 +76,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{specialistId}/update")]
+        [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> UpdateSpecialist(int specialistId, [FromBody] UpdateSpecialistDto updateRequestDto)
         {
             var updateRequest = new UpdateSpecialistRequest

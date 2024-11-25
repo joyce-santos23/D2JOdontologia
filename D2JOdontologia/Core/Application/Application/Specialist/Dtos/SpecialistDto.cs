@@ -8,6 +8,7 @@ namespace Application.Dtos
         public string Fone { get; set; }
         public string Address { get; set; }
         public string Email { get; set; }
+        public string Password { get; set; }
         public string CroNumber { get; set; }
         public string CroState { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -21,6 +22,7 @@ namespace Application.Dtos
                 Fone = specialist.Fone,
                 Address = specialist.Address,
                 Email = specialist.Email,
+                Password = specialist.PasswordHash,
                 CroNumber = specialist.CroNumber,
                 CroState = specialist.CroState,
                 SpecialtyIds = specialist.Specialties.Select(s => s.Id).ToList()
@@ -35,6 +37,7 @@ namespace Application.Dtos
                 Fone = specialistDto.Fone,
                 Address = specialistDto.Address,
                 Email = specialistDto.Email,
+                PasswordHash = specialistDto.Password,
                 CroNumber = specialistDto.CroNumber,
                 CroState = specialistDto.CroState,
                 Specialties = specialistDto.SpecialtyIds.Select(id => new SpecialtyEntity { Id = id }).ToList()
