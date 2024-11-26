@@ -173,5 +173,61 @@ namespace Application.Tests
             Assert.IsFalse(response.Success);
             Assert.AreEqual("No available schedules found for the given specialist.", response.Message);
         }
+
+        [Test]
+        public async Task GetSchedulesByDate_ShouldReturnSuccess_WhenSchedulesExist()
+        {
+            // Arrange
+            var date = DateTime.UtcNow.Date;
+            var schedules = new List<Domain.Entities.Schedule>
+            {
+                new Domain.Entities.Schedule { Id = 1, SpecialistId = 1, Data = date.AddHours(9) },
+                new Domain.Entities.Schedule { Id = 2, SpecialistId = 1, Data = date.AddHours(10) }
+            };
+
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetByDate(date))
+                .ReturnsAsync(schedules);
+
+            // Act
+            var response = await _scheduleManager.GetSchedulesByDate(date);
+
+            // Assert
+            Assert.IsTrue(response.Success);
+            Assert.IsNotEmpty(response.Data);
+            Assert.AreEqual(2, response.Data.Count);
+            Assert.AreEqual("Schedules for the given date retrieved successfully.", response.Message);
+        }
+
+        [Test]
+        public async Task GetSchedulesByDate_ShouldReturnError_WhenNoSchedulesExistForGivenDate()
+        {
+            var date = DateTime.UtcNow.Date;
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetByDate(date))
+                .ReturnsAsync(new List<Domain.Entities.Schedule>());
+
+            var response = await _scheduleManager.GetSchedulesByDate(date);
+
+            Assert.IsFalse(response.Success);
+            Assert.AreEqual("No schedules found for the given date.", response.Message);
+            Assert.AreEqual(ErrorCode.SCHEDULE_NOT_FOUND, response.ErrorCode);
+        }
+
+        [Test]
+        public async Task GetSchedulesByDate_ShouldReturnError_WhenUnexpectedExceptionOccurs()
+        {
+            var date = DateTime.UtcNow.Date;
+            _scheduleRepositoryMock
+                .Setup(repo => repo.GetByDate(date))
+                .ThrowsAsync(new Exception("Database error"));
+
+            var response = await _scheduleManager.GetSchedulesByDate(date);
+
+            Assert.IsFalse(response.Success);
+            Assert.AreEqual(ErrorCode.COULD_NOT_STORE_DATA, response.ErrorCode);
+            Assert.IsTrue(response.Message.Contains("Error retrieving schedules by date: Database error"));
+        }
+
     }
 }

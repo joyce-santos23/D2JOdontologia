@@ -54,7 +54,6 @@ namespace ApplicationTests
         [Test]
         public async Task CreatePatient_ShouldReturnError_WhenRequiredFieldsAreMissing()
         {
-            // Definindo os casos de teste
             var testCases = new[]
             {
                 new { Field = "Name", PatientData = new PatientDto { Name = "", Fone = "123456789", Address = "123 Main St", Email = "john.doe@example.com", Birth = new DateOnly(1990, 1, 1), Cpf = "12345678901" }, ExpectedMessage = "Name is required." },
@@ -65,16 +64,13 @@ namespace ApplicationTests
 
             foreach (var testCase in testCases)
             {
-                // Arrange
                 var request = new CreatePatientRequest
                 {
                     PatientData = testCase.PatientData
                 };
 
-                // Act
                 var response = await _patientManager.CreatePatient(request);
 
-                // Assert
                 Assert.IsFalse(response.Success, $"Failed for field: {testCase.Field}");
                 Assert.AreEqual(ErrorCode.MISSING_REQUIRED_INFORMATION, response.ErrorCode, $"Error code mismatch for field: {testCase.Field}");
                 Assert.AreEqual(testCase.ExpectedMessage, response.Message, $"Message mismatch for field: {testCase.Field}");

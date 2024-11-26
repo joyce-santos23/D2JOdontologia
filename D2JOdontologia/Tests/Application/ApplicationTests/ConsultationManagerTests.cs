@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Application;
 using ConsultationEntity = Domain.Entities.Consultation;
+using Application.Consultation.Dtos;
 
 namespace ApplicationTests.Consultation
 {
@@ -33,27 +34,70 @@ namespace ApplicationTests.Consultation
         #region CreateConsultation Tests
 
         [Test]
-        public async Task CreateConsultation_ShouldReturnSuccess_WhenValidConsultationIsCreated()
+        public async Task MapToResponseDto_ShouldMapCorrectly()
         {
-            var consultationDto = new ConsultationRequestDto { PatientId = 1, ScheduleId = 10, Procedure = "Consulta" };
-            var patient = new Patient { Id = 1, Name = "Test Patient" };
-            var schedule = new Schedule { Id = 10, Data = DateTime.UtcNow.AddDays(1), IsAvailable = true };
+            var consultation = new ConsultationEntity
+            {
+                Id = 1,
+                Patient = new Patient { Id = 1, Name = "John Doe" }, 
+                Schedule = new Schedule
+                {
+                    Id = 10,
+                    Data = DateTime.UtcNow.AddDays(1),
+                    Specialist = new Specialist { Id = 2, Name = "Dr. Smith" } 
+                },
+                Procedure = "Consulta Odontológica",
+                CreatedAt = DateTime.UtcNow
+            };
 
-            _patientRepositoryMock.Setup(repo => repo.Get(consultationDto.PatientId)).ReturnsAsync(patient);
-            _scheduleRepositoryMock.Setup(repo => repo.Get(consultationDto.ScheduleId)).ReturnsAsync(schedule);
-            _consultationRepositoryMock.Setup(repo => repo.Create(It.IsAny<ConsultationEntity>())).ReturnsAsync(1);
+            var result = ConsultationResponseDto.MapToResponseDto(consultation);
 
-            var response = await _consultationManager.CreateConsultation(consultationDto);
-
-            Assert.IsTrue(response.Success);
-            Assert.AreEqual("Consultation created successfully.", response.Message);
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("John Doe", result.PatientName);
+            Assert.AreEqual("Dr. Smith", result.SpecialistName);
+            Assert.AreEqual(consultation.Schedule.Data, result.ScheduleDate);
+            Assert.AreEqual("Consulta Odontológica", result.Procedure);
+            Assert.AreEqual(consultation.CreatedAt, result.CreatedAt);
         }
 
-        // Other CreateConsultation tests...
 
-        #endregion
+        [Test]
+        public async Task UpdateConsultation_ShouldFail_WhenNewScheduleIsUnavailable()
+        {
+            var consultationDto = new ConsultationUpdateRequestDto { ScheduleId = 10, Procedure = "Nova Consulta" };
+            var existingConsultation = new ConsultationEntity { Id = 1, ScheduleId = 9, PatientId = 1, Procedure = "Consulta Antiga" };
+            var unavailableSchedule = new Schedule { Id = 10, IsAvailable = false };
 
-        #region GetConsultationsByDate Tests
+            _consultationRepositoryMock.Setup(repo => repo.Get(1)).ReturnsAsync(existingConsultation);
+            _scheduleRepositoryMock.Setup(repo => repo.Get(10)).ReturnsAsync(unavailableSchedule);
+
+            var response = await _consultationManager.UpdateConsultation(1, consultationDto);
+
+            Assert.IsFalse(response.Success);
+            Assert.AreEqual(ErrorCode.INVALID_DATE, response.ErrorCode);
+            Assert.AreEqual("The selected schedule is not available.", response.Message);
+        }
+
+        [Test]
+        public async Task UpdateConsultation_ShouldUpdateOldAndNewScheduleAvailability()
+        {
+            var consultationDto = new ConsultationUpdateRequestDto { ScheduleId = 10, Procedure = "Nova Consulta" };
+            var existingConsultation = new ConsultationEntity { Id = 1, ScheduleId = 9, PatientId = 1, Procedure = "Consulta Antiga" };
+            var oldSchedule = new Schedule { Id = 9, IsAvailable = false };
+            var newSchedule = new Schedule { Id = 10, IsAvailable = true };
+
+            _consultationRepositoryMock.Setup(repo => repo.Get(1)).ReturnsAsync(existingConsultation);
+            _scheduleRepositoryMock.Setup(repo => repo.Get(9)).ReturnsAsync(oldSchedule);
+            _scheduleRepositoryMock.Setup(repo => repo.Get(10)).ReturnsAsync(newSchedule);
+
+            var response = await _consultationManager.UpdateConsultation(1, consultationDto);
+
+            Assert.IsTrue(response.Success);
+            Assert.AreEqual("Consultation updated successfully.", response.Message);
+            Assert.IsTrue(oldSchedule.IsAvailable);
+            Assert.IsFalse(newSchedule.IsAvailable);
+        }
+
 
         [Test]
         public async Task GetConsultationsByDate_ShouldReturnSuccess_WhenConsultationsExist()
@@ -87,13 +131,13 @@ namespace ApplicationTests.Consultation
             Assert.AreEqual(2, response.Data.Count);
             Assert.AreEqual("Consultations retrieved successfully.", response.Message);
 
-            Assert.AreEqual(1, response.Data[0].Id);
-            Assert.AreEqual("Consulta", response.Data[0].Procedure);
-            Assert.AreEqual(10, response.Data[0].ScheduleId);
+            var firstConsultation = response.Data.FirstOrDefault();
+            Assert.AreEqual(1, firstConsultation.Id);
+            Assert.AreEqual("Consulta", firstConsultation.Procedure);
 
-            Assert.AreEqual(2, response.Data[1].Id);
-            Assert.AreEqual("Tratamento", response.Data[1].Procedure);
-            Assert.AreEqual(11, response.Data[1].ScheduleId);
+            var secondConsultation = response.Data.LastOrDefault();
+            Assert.AreEqual(2, secondConsultation.Id);
+            Assert.AreEqual("Tratamento", secondConsultation.Procedure);
         }
 
 
@@ -154,32 +198,36 @@ namespace ApplicationTests.Consultation
         [Test]
         public async Task UpdateConsultation_ShouldReturnSuccess_WhenConsultationIsUpdated()
         {
-            var consultationDto = new ConsultationRequestDto { Id = 1, ScheduleId = 10, Procedure = "Nova Consulta" };
-            var existingConsultation = new ConsultationEntity { Id = 1, ScheduleId = 9, PatientId = 1, Procedure = "Consulta Antiga" };
+            var consultationId = 1;
+            var consultationDto = new ConsultationUpdateRequestDto { ScheduleId = 10, Procedure = "Nova Consulta" };
+            var existingConsultation = new ConsultationEntity { Id = consultationId, ScheduleId = 9, PatientId = 1, Procedure = "Consulta Antiga" };
 
-            _consultationRepositoryMock.Setup(repo => repo.Get(consultationDto.Id)).ReturnsAsync(existingConsultation);
+            _consultationRepositoryMock.Setup(repo => repo.Get(consultationId)).ReturnsAsync(existingConsultation);
             _consultationRepositoryMock.Setup(repo => repo.Update(It.IsAny<ConsultationEntity>()));
 
-            var response = await _consultationManager.UpdateConsultation(consultationDto);
+            var response = await _consultationManager.UpdateConsultation(consultationId, consultationDto);
 
             Assert.IsTrue(response.Success);
             Assert.AreEqual("Consultation updated successfully.", response.Message);
             Assert.AreEqual("Nova Consulta", response.ConsultationData.Procedure);
         }
 
+
         [Test]
         public async Task UpdateConsultation_ShouldReturnError_WhenConsultationNotFound()
         {
-            var consultationDto = new ConsultationRequestDto { Id = 1, ScheduleId = 10, Procedure = "Nova Consulta" };
+            var consultationId = 1;
+            var consultationDto = new ConsultationUpdateRequestDto { ScheduleId = 10, Procedure = "Nova Consulta" };
 
-            _consultationRepositoryMock.Setup(repo => repo.Get(consultationDto.Id)).ReturnsAsync((ConsultationEntity)null);
+            _consultationRepositoryMock.Setup(repo => repo.Get(consultationId)).ReturnsAsync((ConsultationEntity)null);
 
-            var response = await _consultationManager.UpdateConsultation(consultationDto);
+            var response = await _consultationManager.UpdateConsultation(consultationId, consultationDto);
 
             Assert.IsFalse(response.Success);
             Assert.AreEqual(ErrorCode.CONSULTATION_NOT_FOUND, response.ErrorCode);
             Assert.AreEqual("Consultation not found.", response.Message);
         }
+
 
         #endregion
     }

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelo gerenciamento de pacientes.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class PatientController : ControllerBase
@@ -14,12 +17,26 @@ namespace API.Controllers
         private readonly ILogger<PatientController> _logger;
         private readonly IPatientManager _patientManager;
 
+        /// <summary>
+        /// Construtor do PatientController.
+        /// </summary>
+        /// <param name="logger">Logger para registrar eventos e erros.</param>
+        /// <param name="patientManager">Gerenciador responsável pelas operações de pacientes.</param>
         public PatientController(ILogger<PatientController> logger, IPatientManager patientManager)
         {
             _logger = logger;
             _patientManager = patientManager;
         }
 
+        /// <summary>
+        /// Cria um novo paciente.
+        /// </summary>
+        /// <param name="request">Dados do paciente a ser criado.</param>
+        /// <returns>Detalhes do paciente criado.</returns>
+        /// <response code="201">Paciente criado com sucesso.</response>
+        /// <response code="400">Dados inválidos fornecidos.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="500">Erro interno ao processar a solicitação.</response>
         [HttpPost("create")]
         [AllowAnonymous]
         public async Task<IActionResult> CreatePatient([FromBody] PatientDto request)
@@ -39,6 +56,13 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Obtém todos os pacientes cadastrados.
+        /// </summary>
+        /// <returns>Lista de pacientes.</returns>
+        /// <response code="200">Retorna a lista de pacientes.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="404">Nenhum paciente encontrado.</response>
         [HttpGet("all")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetAllPatients()
@@ -51,6 +75,14 @@ namespace API.Controllers
             return Ok(response.Select(p => p.PatientData));
         }
 
+        /// <summary>
+        /// Obtém os detalhes de um paciente específico.
+        /// </summary>
+        /// <param name="id">ID do paciente.</param>
+        /// <returns>Detalhes do paciente.</returns>
+        /// <response code="200">Paciente encontrado.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="404">Paciente não encontrado.</response>
         [HttpGet("{id}")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetPatient(int id)
@@ -63,6 +95,17 @@ namespace API.Controllers
             return Ok(response.PatientData);
         }
 
+        /// <summary>
+        /// Atualiza os dados de um paciente.
+        /// </summary>
+        /// <param name="id">ID do paciente a ser atualizado.</param>
+        /// <param name="updateRequest">Dados atualizados do paciente.</param>
+        /// <returns>Detalhes do paciente atualizado.</returns>
+        /// <response code="200">Paciente atualizado com sucesso.</response>
+        /// <response code="400">Dados inválidos fornecidos.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="404">Paciente não encontrado.</response>
+        /// <response code="500">Erro interno ao processar a solicitação.</response>
         [HttpPut("{id}/update")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto updateRequest)
@@ -82,6 +125,12 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Mapeia os códigos de erro para respostas HTTP apropriadas.
+        /// </summary>
+        /// <param name="errorCode">Código de erro da aplicação.</param>
+        /// <param name="message">Mensagem de erro.</param>
+        /// <returns>Resposta HTTP apropriada com a mensagem de erro.</returns>
         private IActionResult MapErrorToResponse(Application.ErrorCode errorCode, string message)
         {
             return errorCode switch

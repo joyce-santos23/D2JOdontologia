@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// Controlador para gerenciamento de consultas.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class ConsultationController : ControllerBase
@@ -13,12 +16,27 @@ namespace API.Controllers
         private readonly IConsultationManager _consultationManager;
         private readonly ILogger<ConsultationController> _logger;
 
+        /// <summary>
+        /// Construtor do ConsultationController.
+        /// </summary>
+        /// <param name="consultationManager">Gerenciador de consultas.</param>
+        /// <param name="logger">Logger para registrar eventos e erros.</param>
         public ConsultationController(IConsultationManager consultationManager, ILogger<ConsultationController> logger)
         {
             _consultationManager = consultationManager;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Cria uma nova consulta.
+        /// </summary>
+        /// <param name="consultationDto">Dados da consulta a ser criada.</param>
+        /// <returns>Detalhes da consulta criada.</returns>
+        /// <response code="201">Consulta criada com sucesso.</response>
+        /// <response code="400">Dados inválidos para a consulta.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="500">Erro interno ao processar a requisição.</response>
         [HttpPost]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> CreateConsultation([FromBody] ConsultationRequestDto consultationDto)
@@ -32,6 +50,14 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Obtém todas as consultas.
+        /// </summary>
+        /// <returns>Lista de consultas cadastradas.</returns>
+        /// <response code="200">Lista de consultas retornada com sucesso.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="500">Erro interno ao processar a requisição.</response>
         [HttpGet("all")]
         [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> GetAllConsultations()
@@ -44,6 +70,15 @@ namespace API.Controllers
             return Ok(response.Data);
         }
 
+        /// <summary>
+        /// Obtém os detalhes de uma consulta específica.
+        /// </summary>
+        /// <param name="id">ID da consulta.</param>
+        /// <returns>Detalhes da consulta.</returns>
+        /// <response code="200">Consulta retornada com sucesso.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="404">Consulta não encontrada.</response>
         [HttpGet("{id}")]
         [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultation(int id)
@@ -57,6 +92,15 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Obtém consultas por data.
+        /// </summary>
+        /// <param name="date">Data das consultas.</param>
+        /// <returns>Lista de consultas na data especificada.</returns>
+        /// <response code="200">Consultas retornadas com sucesso.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="404">Nenhuma consulta encontrada para a data especificada.</response>
         [HttpGet("by-date/{date}")]
         [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultationsByDate(DateTime date)
@@ -70,19 +114,16 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
-        [HttpGet("by-patient/{patientId}")]
-        [Authorize(Roles = "Specialist,Patient")]
-        public async Task<IActionResult> GetConsultationsByPatient(int patientId)
-        {
-            var response = await _consultationManager.GetConsultationsByPatient(patientId);
-
-            if (response.Success)
-                return Ok(response.Data);
-
-            _logger.LogError("Failed to retrieve consultations by patient: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
-            return MapErrorToResponse(response.ErrorCode, response.Message);
-        }
-
+        /// <summary>
+        /// Obtém consultas de um especialista específico.
+        /// </summary>
+        /// <param name="specialistId">ID do especialista.</param>
+        /// <returns>Lista de consultas associadas ao especialista.</returns>
+        /// <response code="200">Consultas retornadas com sucesso.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="404">Nenhuma consulta encontrada para o especialista especificado.</response>
+        /// <response code="500">Erro interno ao processar a requisição.</response>
         [HttpGet("by-specialist/{specialistId}")]
         [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetConsultationsBySpecialist(int specialistId)
@@ -92,10 +133,25 @@ namespace API.Controllers
             if (response.Success)
                 return Ok(response.Data);
 
-            _logger.LogError("Failed to retrieve consultations by specialist: {ErrorCode} - {Message}", response.ErrorCode, response.Message);
+            _logger.LogError("Failed to retrieve consultations for specialist {SpecialistId}: {ErrorCode} - {Message}",
+                specialistId, response.ErrorCode, response.Message);
+
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+
+        /// <summary>
+        /// Atualiza os dados de uma consulta.
+        /// </summary>
+        /// <param name="id">ID da consulta.</param>
+        /// <param name="consultationDto">Dados atualizados da consulta.</param>
+        /// <returns>Detalhes da consulta atualizada.</returns>
+        /// <response code="200">Consulta atualizada com sucesso.</response>
+        /// <response code="400">Dados inválidos para atualização.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="404">Consulta não encontrada.</response>
+        /// <response code="500">Erro interno ao processar a requisição.</response>
         [HttpPut("{id}")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> UpdateConsultation(int id, [FromBody] ConsultationUpdateRequestDto consultationDto)
@@ -109,6 +165,12 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Mapeia os códigos de erro para respostas HTTP apropriadas.
+        /// </summary>
+        /// <param name="errorCode">Código de erro da aplicação.</param>
+        /// <param name="message">Mensagem de erro.</param>
+        /// <returns>Resposta HTTP apropriada com a mensagem de erro.</returns>
         private IActionResult MapErrorToResponse(Application.ErrorCode errorCode, string message)
         {
             return errorCode switch

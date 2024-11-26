@@ -24,13 +24,12 @@ namespace Application.Tests
             _specialtyRepositoryMock = new Mock<ISpecialtyRepository>();
             _specialistManager = new SpecialistManager(_specialistRepositoryMock.Object, _specialtyRepositoryMock.Object);
         }
-
         [Test]
         public async Task CreateSpecialist_ShouldReturnSuccess_WhenSpecialistIsCreated()
         {
             var specialistDto = new SpecialistDto
             {
-                Id = 0,
+                
                 Name = "Valid Name",
                 Fone = "123456789",
                 Address = "Valid Address",
@@ -48,21 +47,22 @@ namespace Application.Tests
 
             _specialistRepositoryMock
                 .Setup(repo => repo.Create(It.IsAny<SpecialistEntity>()))
-                .ReturnsAsync(1);
+                .ReturnsAsync(1); // Simula a criação com ID 1
 
             var response = await _specialistManager.CreateSpecialist(request);
 
             Assert.IsTrue(response.Success);
             Assert.AreEqual("Specialist created successfully!", response.Message);
-            Assert.AreEqual(1, request.SpecialistData.Id);
+            Assert.AreEqual(1, response.SpecialistData.Id); // Verifica o ID retornado
         }
+
 
         [Test]
         public async Task CreateSpecialist_ShouldReturnError_WhenSpecialtyNotFound()
         {
             var specialistDto = new SpecialistDto
             {
-                Id = 0,
+                
                 Name = "Valid Name",
                 Fone = "123456789",
                 Address = "Valid Address",
@@ -130,6 +130,49 @@ namespace Application.Tests
             var response = await _specialistManager.GetSpecialist(1);
 
             Assert.IsFalse(response.Success);
+        }
+
+        [Test]
+        public async Task UpdateSpecialist_ShouldReturnSuccess_WhenSpecialistIsUpdated()
+        {
+            var specialist = new SpecialistEntity
+            {
+                Id = 1,
+                Name = "Old Name",
+                Address = "Old Address",
+                Fone = "123456789",
+                Specialties = new List<Domain.Entities.Specialty>
+                {
+                    new Domain.Entities.Specialty { Id = 1, Name = "Specialty 1" }
+                }
+            };
+
+            var updateRequest = new UpdateSpecialistRequest
+            {
+                SpecialistData = new UpdateSpecialistDto
+                {
+                    Address = "New Address",
+                    Fone = "987654321",
+                    SpecialtyIds = new List<int> { 1, 2 }
+                }
+            };
+
+            var newSpecialties = new List<Domain.Entities.Specialty>
+            {
+                new Domain.Entities.Specialty { Id = 2, Name = "Specialty 2" }
+            };
+
+            _specialistRepositoryMock.Setup(repo => repo.Get(1)).ReturnsAsync(specialist);
+            _specialtyRepositoryMock.Setup(repo => repo.GetByIds(It.IsAny<List<int>>())).ReturnsAsync(newSpecialties);
+            _specialistRepositoryMock.Setup(repo => repo.Update(It.IsAny<SpecialistEntity>())).Returns(Task.CompletedTask);
+
+            var response = await _specialistManager.UpdateSpecialist(1, updateRequest);
+
+            Assert.IsTrue(response.Success);
+            Assert.AreEqual("Specialist updated successfully.", response.Message);
+            Assert.AreEqual("New Address", response.SpecialistData.Address);
+            Assert.AreEqual("987654321", response.SpecialistData.Fone);
+            Assert.AreEqual(2, response.SpecialistData.Specialties.Count);
         }
     }
 }

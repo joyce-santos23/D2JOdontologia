@@ -304,10 +304,29 @@ namespace Application.Consultation
                 if (existingConsultation == null)
                     throw new ConsultationNotFoundException();
 
+                var newSchedule = await _scheduleRepository.Get(consultationDto.ScheduleId);
+                if (newSchedule == null)
+                    throw new ScheduleNotFoundException();
+
+                if (!newSchedule.IsAvailable)
+                    throw new InvalidDateException("The selected schedule is not available.");
+
+                var oldScheduleId = existingConsultation.ScheduleId;
+
                 existingConsultation.Procedure = consultationDto.Procedure;
                 existingConsultation.ScheduleId = consultationDto.ScheduleId;
-
+                existingConsultation.Validate();
                 await _consultationRepository.Update(existingConsultation);
+
+                var oldSchedule = await _scheduleRepository.Get(oldScheduleId);
+                if (oldSchedule != null)
+                {
+                    oldSchedule.IsAvailable = true;
+                    await _scheduleRepository.UpdateAsync(oldSchedule);
+                }
+
+                newSchedule.IsAvailable = false;
+                await _scheduleRepository.UpdateAsync(newSchedule);
 
                 var responseDto = ConsultationResponseDto.MapToResponseDto(existingConsultation);
 
@@ -327,6 +346,24 @@ namespace Application.Consultation
                     Message = "Consultation not found."
                 };
             }
+            catch (ScheduleNotFoundException)
+            {
+                return new ConsultationResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.SCHEDULE_NOT_FOUND,
+                    Message = "Schedule not found."
+                };
+            }
+            catch (InvalidDateException ex)
+            {
+                return new ConsultationResponse
+                {
+                    Success = false,
+                    ErrorCode = ErrorCode.INVALID_DATE,
+                    Message = ex.Message
+                };
+            }
             catch (Exception ex)
             {
                 return new ConsultationResponse
@@ -337,5 +374,7 @@ namespace Application.Consultation
                 };
             }
         }
+
+
     }
 }

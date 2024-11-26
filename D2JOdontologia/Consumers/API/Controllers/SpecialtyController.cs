@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelo gerenciamento de especialidades.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class SpecialtyController : ControllerBase
@@ -12,14 +15,26 @@ namespace API.Controllers
         private readonly ISpecialtyManager _specialtyManager;
         private readonly ILogger<SpecialtyController> _logger;
 
+        /// <summary>
+        /// Construtor do SpecialtyController.
+        /// </summary>
+        /// <param name="specialtyManager">Gerenciador de especialidades.</param>
+        /// <param name="logger">Logger para registrar eventos e erros.</param>
         public SpecialtyController(ISpecialtyManager specialtyManager, ILogger<SpecialtyController> logger)
         {
             _specialtyManager = specialtyManager;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Obtém todas as especialidades cadastradas.
+        /// </summary>
+        /// <returns>Lista de especialidades.</returns>
+        /// <response code="200">Lista de especialidades retornada com sucesso.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="500">Erro interno ao processar a solicitação.</response>
         [HttpGet("all")]
-        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetAllSpecialties()
         {
             var response = await _specialtyManager.GetAllSpecialties();
@@ -32,8 +47,17 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Obtém os detalhes de uma especialidade específica pelo ID.
+        /// </summary>
+        /// <param name="id">ID da especialidade.</param>
+        /// <returns>Detalhes da especialidade.</returns>
+        /// <response code="200">Especialidade encontrada com sucesso.</response>
+        /// <response code="401">Usuário não autenticado.</response>
+        /// <response code="403">Usuário não autorizado.</response>
+        /// <response code="404">Especialidade não encontrada.</response>
+        /// <response code="500">Erro interno ao processar a solicitação.</response>
         [HttpGet("{id}")]
-        [Authorize(Roles = "Specialist,Patient")]
         public async Task<IActionResult> GetSpecialty(int id)
         {
             var response = await _specialtyManager.GetSpecialty(id);
@@ -46,6 +70,12 @@ namespace API.Controllers
             return MapErrorToResponse(response.ErrorCode, response.Message);
         }
 
+        /// <summary>
+        /// Mapeia códigos de erro para respostas HTTP apropriadas.
+        /// </summary>
+        /// <param name="errorCode">Código de erro.</param>
+        /// <param name="message">Mensagem de erro.</param>
+        /// <returns>Resposta HTTP apropriada.</returns>
         private IActionResult MapErrorToResponse(ErrorCode? errorCode, string message)
         {
             return errorCode switch

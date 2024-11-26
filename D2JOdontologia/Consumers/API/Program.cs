@@ -47,7 +47,7 @@ builder.Services.AddAuthentication(options =>
     {
         // Key is now RSA public key for validation
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = signingConfigurations.Key,  // Uses RSA key
+        IssuerSigningKey = signingConfigurations.Key,  
         ValidateIssuer = true,
         ValidIssuer = tokenConfigurations.Issuer,
         ValidateAudience = true,
@@ -102,7 +102,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "D2J API",
         Version = "v1",
-        Description = "API for managing medical appointments",
+        Description = "API for managing dental appointments",
         TermsOfService = new Uri("https://github.com/joyce-santos23"),
         Contact = new OpenApiContact
         {
@@ -116,6 +116,10 @@ builder.Services.AddSwaggerGen(c =>
             Url = new Uri("https://github.com/joyce-santos23")
         }
     });
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 
     // Add JWT authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

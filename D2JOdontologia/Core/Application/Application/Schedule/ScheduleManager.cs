@@ -30,6 +30,9 @@ namespace Application.Schedule
                 if (!scheduleDto.StartDate.HasValue || !scheduleDto.EndDate.HasValue)
                     throw new InvalidScheduleDatesException("StartDate or EndDate cannot be null.");
 
+                if (scheduleDto.StartDate.Value < DateTime.UtcNow)
+                    throw new InvalidScheduleDatesException("The start date cannot be earlier than the current date.");
+
                 var specialist = await _specialistRepository.Get(scheduleDto.SpecialistId);
                 if (specialist == null)
                     throw new SpecialistNotFoundException("The specialist ID provided was not found.");
@@ -142,7 +145,6 @@ namespace Application.Schedule
             }
         }
 
-
         public async Task<ScheduleResponse> GetSchedule(int scheduleId)
         {
             try
@@ -154,7 +156,7 @@ namespace Application.Schedule
                     {
                         Success = false,
                         ErrorCode = ErrorCode.SCHEDULE_NOT_FOUND,
-                        Message = "Schedule not found."
+                        Message = "No schedule found with the provided ID."
                     };
                 }
 
@@ -216,7 +218,6 @@ namespace Application.Schedule
             }
         }
 
-
         public async Task<ScheduleResponse> UpdateScheduleAvailability(int id, bool isAvailable)
         {
             try
@@ -260,8 +261,6 @@ namespace Application.Schedule
                 };
             }
         }
-
-
 
         public async Task<ScheduleListResponse> GetAvailableSchedules(int specialistId)
         {
