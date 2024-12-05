@@ -224,6 +224,10 @@ Body Example:
 * **GET** /api/specialty/{id}
 
 
+## Class Diagram
+<img src="https://github.dev/joyce-santos23/D2JOdontologia/Diagram/Diagram.jpg" alt="Texto Alternativo">
+
+
 ## Database Configuration
 
 The API uses Entity Framework Core with SQL Server. The connection string is specified in the `appsettings.json` file:
