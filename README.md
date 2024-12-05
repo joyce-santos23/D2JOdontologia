@@ -225,7 +225,7 @@ Body Example:
 
 
 ## Class Diagram
-<img src="https://github.dev/joyce-santos23/D2JOdontologia/Diagram/Diagram.jpg" alt="Texto Alternativo">
+<img src="https://raw.githubusercontent.com/joyce-santos23/D2JOdontologia/refs/heads/master/Diagram/Diagram.jpg" alt="Class Diagram Image">
 
 
 ## Database Configuration
